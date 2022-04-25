@@ -1,3 +1,4 @@
+const db = require('../../data/db-config')
 /*
   If the user does not have a session saved in the server
 
@@ -19,9 +20,17 @@ function restricted(req, res, next) {
     "message": "Username taken"
   }
 */
-function checkUsernameFree(req, res, next) {
-  console.log('')
-  next()
+async function checkUsernameFree(req, res, next) {
+  try{
+    const checkUser = await db('users').where('username', req.body.username)
+    if(!checkUser){
+      next({status:422, message: "Username taken"})
+    }else{
+      next()
+    }
+  }catch(err){
+    next(err)
+  }
 }
 
 /*
