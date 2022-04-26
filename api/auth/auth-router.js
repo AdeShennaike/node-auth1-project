@@ -28,7 +28,7 @@ const {checkUsernameFree, checkUsernameExists, checkPasswordLength} = require('.
     "message": "Password must be longer than 3 chars"
   }
  */
-router.post('/register', checkUsernameFree, async (req, res, next) => {
+router.post('/register', checkUsernameFree, checkPasswordLength, async (req, res, next) => {
   try{
     const {username, password} = req.body
     const hash = bcrypt.hashSync(password, 8)
@@ -56,7 +56,7 @@ router.post('/register', checkUsernameFree, async (req, res, next) => {
   }
  */
 
-router.post('/login', async (req, res, next) => {
+router.post('/login',  async (req, res, next) => {
   try{
     const { username, password } = req.body;
     const [user] = await User.findBy({ username })
