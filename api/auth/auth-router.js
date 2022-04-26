@@ -1,7 +1,7 @@
 const router = require('express').Router()
 const bcrypt = require('bcryptjs')
 const User = require('../users/users-model')
-const {restricted, checkUsernameFree, checkUsernameExists, checkPasswordLength} = require('./auth-middleware')
+const {checkUsernameFree, checkUsernameExists, checkPasswordLength} = require('./auth-middleware')
 // Require `checkUsernameFree`, `checkUsernameExists` and `checkPasswordLength`
 // middleware functions from `auth-middleware.js`. You will need them here!
 
@@ -87,7 +87,17 @@ router.post('/login', async (req, res, next) => {
  */
 router.get('/logout', async (req, res, next) => {
   try{
-    res.json('logout')
+    if(req.session.user){
+      req.session.destroy(err =>{
+        if(err){
+          next(err)
+        }else{
+          next({ status: 200, message: "logged out"})
+        }
+      })
+    }else{
+      next({ status: 200, message: "no session"})
+    }
   }catch(err){
     next(err)
   }
