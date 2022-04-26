@@ -28,7 +28,7 @@ const {restricted, checkUsernameFree, checkUsernameExists, checkPasswordLength} 
     "message": "Password must be longer than 3 chars"
   }
  */
-router.post('/register', async (req, res, next) => {
+router.post('/register', checkUsernameFree, async (req, res, next) => {
   try{
     const {username, password} = req.body
     const hash = bcrypt.hashSync(password, 8)
@@ -61,6 +61,7 @@ router.post('/login', async (req, res, next) => {
     const { username, password } = req.body;
     const [user] = await User.findBy({ username })
     if(user && bcrypt.compareSync(password, user.password)){
+      req.session.user = user
       res.json({message: `Welcome ${username}!`})
     }else{
       next({status: 401, message: "Invalid credentials"})

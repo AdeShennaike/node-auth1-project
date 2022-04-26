@@ -8,8 +8,11 @@ const db = require('../../data/db-config')
   }
 */
 function restricted(req, res, next) {
-  console.log('')
-  next()
+  if(req.session.user){
+    next()
+  }else{
+    next({ status:401, message: "You shall not pass!"})
+  }
 }
 
 /*
@@ -23,7 +26,7 @@ function restricted(req, res, next) {
 async function checkUsernameFree(req, res, next) {
   try{
     const checkUser = await db('users').where('username', req.body.username)
-    if(!checkUser){
+    if(checkUser){
       next({status:422, message: "Username taken"})
     }else{
       next()
